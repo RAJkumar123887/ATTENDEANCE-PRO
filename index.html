@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Pro - Complete System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --gray-light: #e9ecef;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .nav-link.active {
+            color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .auth-section {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #3ab0d6;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #e01e6f;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+        
+        .btn:disabled {
+            background-color: var(--gray);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+        
+        .page {
+            display: none;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .dashboard-page, .profile-page {
+            max-width: 1000px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .input-with-icon {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-footer {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .dashboard {
+            max-width: 800px;
+        }
+        
+        .welcome-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .welcome-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .welcome-subtitle {
+            opacity: 0.9;
+        }
+        
+        .status-card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .status-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-info {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .status-item {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--light);
+            border-radius: var(--radius);
+        }
+        
+        .status-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-value {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .punch-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .punch-btn {
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+            border-radius: 50px;
+            min-width: 150px;
+        }
+        
+        .activity-card, .profile-card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .activity-title, .profile-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-date {
+            font-weight: 500;
+        }
+        
+        .activity-times {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .activity-time {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .activity-label {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+        
+        .activity-value {
+            font-weight: 500;
+        }
+        
+        .message {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .message.success {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+        
+        .message.error {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+        
+        .message.warning {
+            background-color: rgba(248, 150, 30, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+        
+        .stats-card {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--light);
+            border-radius: var(--radius);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar {
+            text-align: center;
+        }
+        
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            margin: 0 auto 1rem;
+        }
+        
+        .profile-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+        
+        .detail-label {
+            font-size: 0.875rem;
+            color: var(--gray);
+            margin-bottom: 0.25rem;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+        }
+        
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .attendance-table th, .attendance-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .attendance-table th {
+            background-color: var(--light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .attendance-table tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-present {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+        
+        .status-absent {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+        
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            margin-top: auto;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-links {
+                justify-content: center;
+            }
+            
+            .auth-section {
+                justify-content: center;
+            }
+            
+            .status-info {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .punch-actions {
+                flex-direction: column;
+            }
+            
+            .activity-times {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .attendance-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <i class="fas fa-fingerprint"></i>
+                        <span>Attendance Pro</span>
+                    </div>
+                    <div class="nav-links">
+                        <a href="#" class="nav-link active" data-page="dashboard">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="#" class="nav-link" data-page="profile">
+                            <i class="fas fa-user"></i>
+                            <span>Profile</span>
+                        </a>
+                    </div>
+                    <div class="auth-section">
+                        <button id="logoutBtn" class="btn btn-outline">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <main>
+            <div class="container">
+                <!-- Login Page -->
+                <div id="loginPage" class="page active">
+                    <h2 class="page-title">Login to Your Account</h2>
+                    <div id="loginMessage" class="message" style="display: none;"></div>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="loginUsername">Username</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="loginUsername" placeholder="Enter your username" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Login</span>
+                            </button>
+                        </div>
+                        <div class="form-footer">
+                            Don't have an account? <a class="link" id="showRegister">Register</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Register Page -->
+                <div id="registerPage" class="page">
+                    <h2 class="page-title">Create New Account</h2>
+                    <div id="registerMessage" class="message" style="display: none;"></div>
+                    <form id="registerForm">
+                        <div class="form-group">
+                            <label for="registerName">Full Name</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user input-icon"></i>
+                                <input type="text" id="registerName" placeholder="Enter your full name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail">Email</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope input-icon"></i>
+                                <input type="email" id="registerEmail" placeholder="Enter your email" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerContact">Contact Number</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-phone input-icon"></i>
+                                <input type="tel" id="registerContact" placeholder="Enter your contact number" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword">Password</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" id="registerPassword" placeholder="Create a password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-user-plus"></i>
+                                <span>Register</span>
+                            </button>
+                        </div>
+                        <div class="form-footer">
+                            Already have an account? <a class="link" id="showLogin">Login</a>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Dashboard Page -->
+                <div id="dashboardPage" class="page dashboard-page">
+                    <div class="welcome-card">
+                        <h2 class="welcome-title" id="welcomeMessage">Welcome!</h2>
+                        <p class="welcome-subtitle" id="currentDate">Loading date...</p>
+                    </div>
+                    
+                    <div id="dashboardMessage" class="message warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>You are not punched in yet. Click Punch In to start your work.</span>
+                    </div>
+                    
+                    <div class="status-card">
+                        <h3 class="status-title">
+                            <i class="fas fa-clock"></i>
+                            <span>Today's Status</span>
+                        </h3>
+                        <div class="status-info">
+                            <div class="status-item">
+                                <div class="status-label">Punch In Time</div>
+                                <div id="punchInTime" class="status-value">--:--</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-label">Punch Out Time</div>
+                                <div id="punchOutTime" class="status-value">--:--</div>
+                            </div>
+                            <div class="status-item">
+                                <div class="status-label">Worked Hours</div>
+                                <div id="workedHours" class="status-value">--:--</div>
+                            </div>
+                        </div>
+                        <div class="punch-actions">
+                            <button id="punchInBtn" class="btn btn-success punch-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                <span>Punch In</span>
+                            </button>
+                            <button id="punchOutBtn" class="btn btn-danger punch-btn" disabled>
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Punch Out</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-card">
+                        <h3 class="stats-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Monthly Statistics</span>
+                        </h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-value" id="daysWorked">0</div>
+                                <div class="stat-label">Days Worked</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="avgHours">0h 0m</div>
+                                <div class="stat-label">Avg. Hours/Day</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="totalHours">0h 0m</div>
+                                <div class="stat-label">Total Hours</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-value" id="onTimePercentage">0%</div>
+                                <div class="stat-label">On Time %</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Weekly Hours</span>
+                        </h3>
+                        <canvas id="hoursChart"></canvas>
+                    </div>
+                    
+                    <div class="activity-card">
+                        <h3 class="activity-title">
+                            <i class="fas fa-history"></i>
+                            <span>Recent Activity</span>
+                        </h3>
+                        <div id="activityList" class="activity-list">
+                            <!-- Activity items will be added here dynamically -->
+                            <p style="text-align: center; color: var(--gray); padding: 2rem;">No recent activity</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Page -->
+                <div id="profilePage" class="page profile-page">
+                    <h2 class="page-title">Employee Profile</h2>
+                    
+                    <div class="profile-card">
+                        <h3 class="profile-title">
+                            <i class="fas fa-user-circle"></i>
+                            <span>Personal Information</span>
+                        </h3>
+                        <div class="profile-info">
+                            <div class="profile-avatar">
+                                <div class="avatar" id="profileAvatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <h3 id="profileName">Loading...</h3>
+                                <p id="profileRole">Employee</p>
+                            </div>
+                            <div class="profile-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Employee ID</div>
+                                    <div class="detail-value" id="profileId">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Email</div>
+                                    <div class="detail-value" id="profileEmail">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Contact</div>
+                                    <div class="detail-value" id="profileContact">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Department</div>
+                                    <div class="detail-value" id="profileDepartment">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Join Date</div>
+                                    <div class="detail-value" id="profileJoinDate">Loading...</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Status</div>
+                                    <div class="detail-value">
+                                        <span class="status-badge status-present">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-card">
+                        <h3 class="profile-title">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Attendance History</span>
+                        </h3>
+                        <div class="table-responsive">
+                            <table class="attendance-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Punch In</th>
+                                        <th>Punch Out</th>
+                                        <th>Worked Hours</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendanceTableBody">
+                                    <!-- Attendance data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="container">
+                <div class="footer-content">
+                    <p>&copy; 2023 Attendance Pro. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Privacy Policy</a>
+                        <a href="#" class="footer-link">Terms of Service</a>
+                        <a href="#" class="footer-link">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ============================
+        // BACKEND SIMULATION
+        // ============================
+        
+        // Base API URL
+        const BASE_URL = 'https://attencance.nearbydoctors.in/public/api';
+        
+        // SIMULATED BACKEND DATA STORAGE
+        class BackendAPI {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('attendance_users')) || [
+                    { 
+                        id: 1, 
+                        username: '9876543210', 
+                        password: '123123', 
+                        name: 'John Doe', 
+                        email: 'john@example.com', 
+                        contact: '9876543210',
+                        department: 'Engineering',
+                        joinDate: '2023-01-15',
+                        role: 'Software Developer'
+                    }
+                ];
+                this.attendance = JSON.parse(localStorage.getItem('attendance_data')) || [];
+                this.tokens = JSON.parse(localStorage.getItem('attendance_tokens')) || {};
+                
+                // Initialize with sample data if empty
+                if (this.attendance.length === 0) {
+                    this.initializeSampleData();
+                }
+            }
+            
+            // Save data to localStorage
+            saveData() {
+                localStorage.setItem('attendance_users', JSON.stringify(this.users));
+                localStorage.setItem('attendance_data', JSON.stringify(this.attendance));
+                localStorage.setItem('attendance_tokens', JSON.stringify(this.tokens));
+            }
+            
+            // Initialize with sample data
+            initializeSampleData() {
+                const today = new Date();
+                const userId = 1;
+                
+                // Add sample attendance data for the past 30 days
+                for (let i = 29; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(today.getDate() - i);
+                    const dateString = date.toISOString().split('T')[0];
+                    
+                    // Skip weekends (approx. 30% of time)
+                    if (date.getDay() === 0 || date.getDay() === 6 || Math.random() < 0.3) {
+                        continue;
+                    }
+                    
+                    const punchIn = new Date(date);
+                    punchIn.setHours(9, Math.floor(Math.random() * 30), 0); // Between 9:00 and 9:30
+                    
+                    const punchOut = new Date(punchIn);
+                    punchOut.setHours(punchIn.getHours() + 8 + Math.floor(Math.random() * 2), 
+                                     punchIn.getMinutes() + Math.floor(Math.random() * 30), 0);
+                    
+                    const diffMs = punchOut - punchIn;
+                    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+                    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    this.attendance.push({
+                        id: this.attendance.length + 1,
+                        userId: userId,
+                        date: dateString,
+                        punchIn: punchIn.toISOString(),
+                        punchOut: punchOut.toISOString(),
+                        workedHours: `${diffHrs}:${diffMins.toString().padStart(2, '0')}`,
+                        latitude: 28.6139 + (Math.random() - 0.5) * 0.01,
+                        longitude: 77.2090 + (Math.random() - 0.5) * 0.01
+                    });
+                }
+                
+                this.saveData();
+            }
+            
+            // Login user
+            login(username, password) {
+                const user = this.users.find(u => u.username === username && u.password === password);
+                if (user) {
+                    // Generate token
+                    const token = 'token_' + Math.random().toString(36).substr(2, 9);
+                    this.tokens[token] = user.id;
+                    this.saveData();
+                    
+                    return {
+                        status: true,
+                        access_token: token,
+                        refresh_token: 'refresh_' + Math.random().toString(36).substr(2, 9),
+                        token_type: 'bearer',
+                        name: user.name,
+                        expires_in: 3600
+                    };
+                } else {
+                    return {
+                        status: false,
+                        message: 'Invalid credentials'
+                    };
+                }
+            }
+            
+            // Register user
+            register(name, email, contact, password) {
+                // Check if user already exists
+                const existingUser = this.users.find(u => u.email === email || u.contact === contact);
+                if (existingUser) {
+                    return {
+                        status: false,
+                        message: 'User with this email or contact already exists'
+                    };
+                }
+                
+                // Create new user
+                const newUser = {
+                    id: this.users.length + 1,
+                    username: contact,
+                    password: password,
+                    name: name,
+                    email: email,
+                    contact: contact,
+                    department: 'General',
+                    joinDate: new Date().toISOString().split('T')[0],
+                    role: 'Employee'
+                };
+                
+                this.users.push(newUser);
+                
+                // Generate token
+                const token = 'token_' + Math.random().toString(36).substr(2, 9);
+                this.tokens[token] = newUser.id;
+                this.saveData();
+                
+                return {
+                    status: true,
+                    access_token: token,
+                    refresh_token: 'refresh_' + Math.random().toString(36).substr(2, 9),
+                    token_type: 'bearer',
+                    expires_in: 3600
+                };
+            }
+            
+            // Check punch status
+            checkPunchStatus(token) {
+                const userId = this.tokens[token];
+                if (!userId) {
+                    return { status: false, message: 'Invalid token' };
+                }
+                
+                const today = new Date().toISOString().split('T')[0];
+                const todayRecord = this.attendance.find(record => 
+                    record.userId == userId && record.date === today
+                );
+                
+                if (todayRecord) {
+                    return {
+                        punched_in: true,
+                        punched_out: !!todayRecord.punchOut,
+                        in_time: todayRecord.punchIn,
+                        out_time: todayRecord.punchOut,
+                        worked_hours: todayRecord.workedHours,
+                        message: todayRecord.punchOut ? 
+                            'You have completed your work for today.' : 
+                            'You are currently punched in.'
+                    };
+                } else {
+                    return {
+                        punched_in: false,
+                        punched_out: false,
+                        in_time: null,
+                        out_time: null,
+                        worked_hours: null,
+                        message: 'User has not punched IN today.'
+                    };
+                }
+            }
+            
+            // Punch in/out
+            punch(token, type, latitude, longitude) {
+                const userId = this.tokens[token];
+                if (!userId) {
+                    return { status: false, message: 'Invalid token' };
+                }
+                
+                const today = new Date().toISOString().split('T')[0];
+                
+                if (type === 'punch-in') {
+                    // Check if already punched in today
+                    const existingRecord = this.attendance.find(record => 
+                        record.userId == userId && record.date === today
+                    );
+                    
+                    if (existingRecord) {
+                        return { status: false, message: 'You have already punched in today.' };
+                    }
+                    
+                    // Create new attendance record
+                    const newRecord = {
+                        id: this.attendance.length + 1,
+                        userId: parseInt(userId),
+                        date: today,
+                        punchIn: new Date().toISOString(),
+                        punchOut: null,
+                        workedHours: null,
+                        latitude: latitude,
+                        longitude: longitude
+                    };
+                    
+                    this.attendance.push(newRecord);
+                    this.saveData();
+                    
+                    return { status: true, message: 'Punched in successfully!' };
+                    
+                } else if (type === 'punch-out') {
+                    // Find today's record
+                    const todayRecord = this.attendance.find(record => 
+                        record.userId == userId && record.date === today
+                    );
+                    
+                    if (!todayRecord) {
+                        return { status: false, message: 'You need to punch in first.' };
+                    }
+                    
+                    if (todayRecord.punchOut) {
+                        return { status: false, message: 'You have already punched out today.' };
+                    }
+                    
+                    // Update record with punch out time
+                    const now = new Date();
+                    todayRecord.punchOut = now.toISOString();
+                    
+                    // Calculate worked hours
+                    const punchInTime = new Date(todayRecord.punchIn);
+                    const punchOutTime = new Date(todayRecord.punchOut);
+                    const diffMs = punchOutTime - punchInTime;
+                    const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+                    const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    todayRecord.workedHours = `${diffHrs}:${diffMins.toString().padStart(2, '0')}`;
+                    this.saveData();
+                    
+                    return { status: true, message: 'Punched out successfully!' };
+                }
+                
+                return { status: false, message: 'Invalid punch type' };
+            }
+            
+            // Get user profile
+            getProfile(token) {
+                const userId = this.tokens[token];
+                if (!userId) {
+                    return { status: false, message: 'Invalid token' };
+                }
+                
+                const user = this.users.find(u => u.id == userId);
+                if (!user) {
+                    return { status: false, message: 'User not found' };
+                }
+                
+                return {
+                    status: true,
+                    data: user
+                };
+            }
+            
+            // Get attendance history
+            getAttendanceHistory(token, limit = 30) {
+                const userId = this.tokens[token];
+                if (!userId) {
+                    return { status: false, message: 'Invalid token' };
+                }
+                
+                const userAttendance = this.attendance
+                    .filter(record => record.userId == userId)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, limit);
+                
+                return {
+                    status: true,
+                    data: userAttendance
+                };
+            }
+            
+            // Get statistics
+            getStatistics(token) {
+                const userId = this.tokens[token];
+                if (!userId) {
+                    return { status: false, message: 'Invalid token' };
+                }
+                
+                // Get current month and year
+                const now = new Date();
+                const currentMonth = now.getMonth();
+                const currentYear = now.getFullYear();
+                
+                // Filter attendance for current month
+                const monthAttendance = this.attendance.filter(record => {
+                    if (record.userId != userId) return false;
+                    
+                    const recordDate = new Date(record.date);
+                    return recordDate.getMonth() === currentMonth && 
+                           recordDate.getFullYear() === currentYear &&
+                           record.punchOut !== null;
+                });
+                
+                // Calculate statistics
+                const daysWorkedCount = monthAttendance.length;
+                let totalMinutes = 0;
+                let onTimeCount = 0;
+                
+                monthAttendance.forEach(record => {
+                    if (record.workedHours) {
+                        const [hours, minutes] = record.workedHours.split(':').map(Number);
+                        totalMinutes += hours * 60 + minutes;
+                        
+                        // Check if punched in before 9:30 AM (on time)
+                        const punchInTime = new Date(record.punchIn);
+                        if (punchInTime.getHours() < 9 || (punchInTime.getHours() === 9 && punchInTime.getMinutes() <= 30)) {
+                            onTimeCount++;
+                        }
+                    }
+                });
+                
+                const avgMinutes = daysWorkedCount > 0 ? Math.round(totalMinutes / daysWorkedCount) : 0;
+                const totalHrs = Math.floor(totalMinutes / 60);
+                const totalMins = totalMinutes % 60;
+                const onTimePercent = daysWorkedCount > 0 ? Math.round((onTimeCount / daysWorkedCount) * 100) : 0;
+                
+                return {
+                    status: true,
+                    data: {
+                        daysWorked: daysWorkedCount,
+                        avgHours: avgMinutes,
+                        totalHours: totalMinutes,
+                        onTimePercentage: onTimePercent,
+                        totalHrs: totalHrs,
+                        totalMins: totalMins
+                    }
+                };
+            }
+        }
+
+        // ============================
+        // FRONTEND APPLICATION
+        // ============================
+        
+        // Initialize backend API
+        const backendAPI = new BackendAPI();
+        
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const registerPage = document.getElementById('registerPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+        const profilePage = document.getElementById('profilePage');
+        
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        const loginMessage = document.getElementById('loginMessage');
+        const registerMessage = document.getElementById('registerMessage');
+        const dashboardMessage = document.getElementById('dashboardMessage');
+        
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+        const logoutBtn = document.getElementById('logoutBtn');
+        
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const currentDate = document.getElementById('currentDate');
+        
+        const punchInBtn = document.getElementById('punchInBtn');
+        const punchOutBtn = document.getElementById('punchOutBtn');
+        
+        const punchInTime = document.getElementById('punchInTime');
+        const punchOutTime = document.getElementById('punchOutTime');
+        const workedHours = document.getElementById('workedHours');
+        
+        const activityList = document.getElementById('activityList');
+        
+        // Stats elements
+        const daysWorked = document.getElementById('daysWorked');
+        const avgHours = document.getElementById('avgHours');
+        const totalHours = document.getElementById('totalHours');
+        const onTimePercentage = document.getElementById('onTimePercentage');
+        
+        // Profile elements
+        const profileAvatar = document.getElementById('profileAvatar');
+        const profileName = document.getElementById('profileName');
+        const profileId = document.getElementById('profileId');
+        const profileEmail = document.getElementById('profileEmail');
+        const profileContact = document.getElementById('profileContact');
+        const profileDepartment = document.getElementById('profileDepartment');
+        const profileJoinDate = document.getElementById('profileJoinDate');
+        const attendanceTableBody = document.getElementById('attendanceTableBody');
+        
+        // Chart variable
+        let hoursChart = null;
+        
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCurrentDate();
+            
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                showDashboard();
+                checkPunchStatus();
+            } else {
+                showLogin();
+            }
+        });
+        
+        // Navigation between pages
+        showRegisterLink.addEventListener('click', showRegister);
+        showLoginLink.addEventListener('click', showLogin);
+        logoutBtn.addEventListener('click', logout);
+        
+        // Navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = this.getAttribute('data-page');
+                
+                // Update active nav link
+                document.querySelectorAll('.nav-link').forEach(nav => {
+                    nav.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Show the selected page
+                if (page === 'dashboard') {
+                    showDashboard();
+                } else if (page === 'profile') {
+                    showProfile();
+                }
+            });
+        });
+        
+        function showLogin() {
+            loginPage.classList.add('active');
+            registerPage.classList.remove('active');
+            dashboardPage.classList.remove('active');
+            profilePage.classList.remove('active');
+            clearMessages();
+        }
+        
+        function showRegister() {
+            registerPage.classList.add('active');
+            loginPage.classList.remove('active');
+            dashboardPage.classList.remove('active');
+            profilePage.classList.remove('active');
+            clearMessages();
+        }
+        
+        function showDashboard() {
+            dashboardPage.classList.add('active');
+            loginPage.classList.remove('active');
+            registerPage.classList.remove('active');
+            profilePage.classList.remove('active');
+            clearMessages();
+            
+            // Update welcome message with user's name
+            const userName = localStorage.getItem('user_name') || 'Employee';
+            welcomeMessage.textContent = `Welcome, ${userName}!`;
+            
+            // Load activity data and stats
+            loadActivityData();
+            updateStatistics();
+            updateChart();
+        }
+        
+        function showProfile() {
+            profilePage.classList.add('active');
+            loginPage.classList.remove('active');
+            registerPage.classList.remove('active');
+            dashboardPage.classList.remove('active');
+            clearMessages();
+            
+            // Load profile data
+            loadProfileData();
+            loadAttendanceHistory();
+        }
+        
+        function clearMessages() {
+            loginMessage.style.display = 'none';
+            registerMessage.style.display = 'none';
+        }
+        
+        // Update current date
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            currentDate.textContent = now.toLocaleDateString('en-US', options);
+        }
+        
+        // Login functionality
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                // Call backend API
+                const result = backendAPI.login(username, password);
+                
+                if (result.status) {
+                    // Store token and user info
+                    localStorage.setItem('access_token', result.access_token);
+                    localStorage.setItem('user_name', result.name);
+                    
+                    showDashboard();
+                    checkPunchStatus();
+                } else {
+                    showMessage(loginMessage, result.message || 'Invalid credentials. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showMessage(loginMessage, 'An error occurred. Please try again.', 'error');
+            }
+        });
+        
+        // Register functionality
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const contact = document.getElementById('registerContact').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            try {
+                // Call backend API
+                const result = backendAPI.register(name, email, contact, password);
+                
+                if (result.status) {
+                    // Store token and user info
+                    localStorage.setItem('access_token', result.access_token);
+                    localStorage.setItem('user_name', name);
+                    
+                    showDashboard();
+                    checkPunchStatus();
+                } else {
+                    showMessage(registerMessage, result.message || 'Registration failed. Please try again.', 'error');
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showMessage(registerMessage, 'An error occurred. Please try again.', 'error');
+            }
+        });
+        
+        // Check punch status
+        async function checkPunchStatus() {
+            const token = localStorage.getItem('access_token');
+            
+            if (!token) {
+                showLogin();
+                return;
+            }
+            
+            try {
+                // Call backend API
+                const result = backendAPI.checkPunchStatus(token);
+                
+                // Update UI based on punch status
+                if (result.punched_in) {
+                    punchInTime.textContent = formatTime(result.in_time);
+                    punchInBtn.disabled = true;
+                    
+                    if (result.punched_out) {
+                        punchOutTime.textContent = formatTime(result.out_time);
+                        workedHours.textContent = result.worked_hours || '--:--';
+                        punchOutBtn.disabled = true;
+                        dashboardMessage.innerHTML = `
+                            <i class="fas fa-check-circle"></i>
+                            <span>${result.message}</span>
+                        `;
+                        dashboardMessage.className = 'message success';
+                    } else {
+                        punchOutBtn.disabled = false;
+                        dashboardMessage.innerHTML = `
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>${result.message}</span>
+                        `;
+                        dashboardMessage.className = 'message warning';
+                    }
+                } else {
+                    punchInBtn.disabled = false;
+                    punchOutBtn.disabled = true;
+                    dashboardMessage.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>${result.message}</span>
+                    `;
+                    dashboardMessage.className = 'message warning';
+                }
+                
+            } catch (error) {
+                console.error('Check punch status error:', error);
+                dashboardMessage.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Failed to fetch attendance status.</span>
+                `;
+                dashboardMessage.className = 'message error';
+            }
+        }
+        
+        // Punch In functionality
+        punchInBtn.addEventListener('click', async function() {
+            const token = localStorage.getItem('access_token');
+            
+            if (!token) {
+                showLogin();
+                return;
+            }
+            
+            // Get current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        
+                        try {
+                            // Call backend API
+                            const result = backendAPI.punch(token, 'punch-in', latitude, longitude);
+                            
+                            if (result.status) {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>${result.message}</span>
+                                `;
+                                dashboardMessage.className = 'message success';
+                                
+                                checkPunchStatus();
+                                loadActivityData();
+                                updateStatistics();
+                                updateChart();
+                            } else {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>${result.message}</span>
+                                `;
+                                dashboardMessage.className = 'message error';
+                            }
+                        } catch (error) {
+                            console.error('Punch in error:', error);
+                            dashboardMessage.innerHTML = `
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>An error occurred. Please try again.</span>
+                            `;
+                            dashboardMessage.className = 'message error';
+                        }
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        // For demo purposes, use default coordinates if location access is denied
+                        const latitude = 28.6139;
+                        const longitude = 77.2090;
+                        
+                        try {
+                            // Call backend API
+                            const result = backendAPI.punch(token, 'punch-in', latitude, longitude);
+                            
+                            if (result.status) {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>${result.message} (Location access was denied, using default coordinates)</span>
+                                `;
+                                dashboardMessage.className = 'message success';
+                                
+                                checkPunchStatus();
+                                loadActivityData();
+                                updateStatistics();
+                                updateChart();
+                            } else {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>${result.message}</span>
+                                `;
+                                dashboardMessage.className = 'message error';
+                            }
+                        } catch (error) {
+                            console.error('Punch in error:', error);
+                            dashboardMessage.innerHTML = `
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>An error occurred. Please try again.</span>
+                            `;
+                            dashboardMessage.className = 'message error';
+                        }
+                    }
+                );
+            } else {
+                dashboardMessage.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Geolocation is not supported by this browser.</span>
+                `;
+                dashboardMessage.className = 'message error';
+            }
+        });
+        
+        // Punch Out functionality
+        punchOutBtn.addEventListener('click', async function() {
+            const token = localStorage.getItem('access_token');
+            
+            if (!token) {
+                showLogin();
+                return;
+            }
+            
+            // Get current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const latitude = position.coords.latitude;
+                        const longitude = position.coords.longitude;
+                        
+                        try {
+                            // Call backend API
+                            const result = backendAPI.punch(token, 'punch-out', latitude, longitude);
+                            
+                            if (result.status) {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>${result.message}</span>
+                                `;
+                                dashboardMessage.className = 'message success';
+                                
+                                checkPunchStatus();
+                                loadActivityData();
+                                updateStatistics();
+                                updateChart();
+                            } else {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>${result.message}</span>
+                                `;
+                                dashboardMessage.className = 'message error';
+                            }
+                        } catch (error) {
+                            console.error('Punch out error:', error);
+                            dashboardMessage.innerHTML = `
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>An error occurred. Please try again.</span>
+                            `;
+                            dashboardMessage.className = 'message error';
+                        }
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        // For demo purposes, use default coordinates if location access is denied
+                        const latitude = 28.6139;
+                        const longitude = 77.2090;
+                        
+                        try {
+                            // Call backend API
+                            const result = backendAPI.punch(token, 'punch-out', latitude, longitude);
+                            
+                            if (result.status) {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>${result.message} (Location access was denied, using default coordinates)</span>
+                                `;
+                                dashboardMessage.className = 'message success';
+                                
+                                checkPunchStatus();
+                                loadActivityData();
+                                updateStatistics();
+                                updateChart();
+                            } else {
+                                dashboardMessage.innerHTML = `
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>${result.message}</span>
+                                `;
+                                dashboardMessage.className = 'message error';
+                            }
+                        } catch (error) {
+                            console.error('Punch out error:', error);
+                            dashboardMessage.innerHTML = `
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>An error occurred. Please try again.</span>
+                            `;
+                            dashboardMessage.className = 'message error';
+                        }
+                    }
+                );
+            } else {
+                dashboardMessage.innerHTML = `
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Geolocation is not supported by this browser.</span>
+                `;
+                dashboardMessage.className = 'message error';
+            }
+        });
+        
+        // Logout functionality
+        function logout() {
+            localStorage.removeItem('access_token');
+            localStorage.removeItem('user_name');
+            showLogin();
+            
+            // Clear form fields
+            loginForm.reset();
+            registerForm.reset();
+        }
+        
+        // Helper functions
+        function showMessage(element, message, type) {
+            element.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'exclamation-triangle'}"></i>
+                <span>${message}</span>
+            `;
+            element.className = `message ${type}`;
+            element.style.display = 'flex';
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        function formatTime(timeString) {
+            if (!timeString) return '--:--';
+            
+            const date = new Date(timeString);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // Load activity data
+        function loadActivityData() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            try {
+                // Call backend API
+                const result = backendAPI.getAttendanceHistory(token, 5);
+                
+                if (result.status) {
+                    const userAttendance = result.data;
+                    activityList.innerHTML = '';
+                    
+                    if (userAttendance.length === 0) {
+                        activityList.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 2rem;">No recent activity</p>';
+                        return;
+                    }
+                    
+                    userAttendance.forEach(record => {
+                        const activityItem = document.createElement('div');
+                        activityItem.className = 'activity-item';
+                        
+                        activityItem.innerHTML = `
+                            <div class="activity-date">${formatDate(record.date)}</div>
+                            <div class="activity-times">
+                                <div class="activity-time">
+                                    <div class="activity-label">IN</div>
+                                    <div class="activity-value">${formatTime(record.punchIn)}</div>
+                                </div>
+                                <div class="activity-time">
+                                    <div class="activity-label">OUT</div>
+                                    <div class="activity-value">${record.punchOut ? formatTime(record.punchOut) : '--:--'}</div>
+                                </div>
+                                <div class="activity-time">
+                                    <div class="activity-label">HOURS</div>
+                                    <div class="activity-value">${record.workedHours || '--:--'}</div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        activityList.appendChild(activityItem);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading activity data:', error);
+            }
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+        
+        // Update statistics
+        function updateStatistics() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            try {
+                // Call backend API
+                const result = backendAPI.getStatistics(token);
+                
+                if (result.status) {
+                    const stats = result.data;
+                    
+                    // Update UI
+                    daysWorked.textContent = stats.daysWorked;
+                    
+                    const avgHrs = Math.floor(stats.avgHours / 60);
+                    const avgMins = stats.avgHours % 60;
+                    avgHours.textContent = `${avgHrs}h ${avgMins}m`;
+                    
+                    totalHours.textContent = `${stats.totalHrs}h ${stats.totalMins}m`;
+                    
+                    onTimePercentage.textContent = `${stats.onTimePercentage}%`;
+                }
+            } catch (error) {
+                console.error('Error updating statistics:', error);
+            }
+        }
+        
+        // Update chart
+        function updateChart() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            try {
+                // Get last 7 days
+                const labels = [];
+                const data = [];
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateString = date.toISOString().split('T')[0];
+                    labels.push(formatDate(dateString));
+                    
+                    // Find attendance for this day
+                    const result = backendAPI.getAttendanceHistory(token, 30);
+                    if (result.status) {
+                        const record = result.data.find(r => r.date === dateString && r.workedHours);
+                        
+                        if (record) {
+                            const [hours, minutes] = record.workedHours.split(':').map(Number);
+                            data.push(hours + minutes / 60); // Convert to decimal hours
+                        } else {
+                            data.push(0);
+                        }
+                    } else {
+                        data.push(0);
+                    }
+                }
+                
+                // Get chart context
+                const ctx = document.getElementById('hoursChart').getContext('2d');
+                
+                // Destroy existing chart if it exists
+                if (hoursChart) {
+                    hoursChart.destroy();
+                }
+                
+                // Create new chart
+                hoursChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Hours Worked',
+                            data: data,
+                            backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                            borderColor: 'rgba(67, 97, 238, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Hours'
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error updating chart:', error);
+            }
+        }
+        
+        // Load profile data
+        function loadProfileData() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            try {
+                // Call backend API
+                const result = backendAPI.getProfile(token);
+                
+                if (result.status) {
+                    const user = result.data;
+                    
+                    // Update UI
+                    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    profileAvatar.innerHTML = initials;
+                    profileName.textContent = user.name;
+                    profileId.textContent = `EMP${user.id.toString().padStart(4, '0')}`;
+                    profileEmail.textContent = user.email;
+                    profileContact.textContent = user.contact;
+                    profileDepartment.textContent = user.department;
+                    
+                    const joinDate = new Date(user.joinDate);
+                    profileJoinDate.textContent = joinDate.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading profile data:', error);
+            }
+        }
+        
+        // Load attendance history for profile
+        function loadAttendanceHistory() {
+            const token = localStorage.getItem('access_token');
+            if (!token) return;
+            
+            try {
+                // Call backend API
+                const result = backendAPI.getAttendanceHistory(token, 30);
+                
+                if (result.status) {
+                    const userAttendance = result.data;
+                    attendanceTableBody.innerHTML = '';
+                    
+                    if (userAttendance.length === 0) {
+                        attendanceTableBody.innerHTML = `
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: var(--gray); padding: 2rem;">
+                                    No attendance records found
+                                </td>
+                            </tr>
+                        `;
+                        return;
+                    }
+                    
+                    userAttendance.forEach(record => {
+                        const row = document.createElement('tr');
+                        
+                        const date = new Date(record.date);
+                        const formattedDate = date.toLocaleDateString('en-US', { 
+                            weekday: 'short', 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric' 
+                        });
+                        
+                        const status = record.punchOut ? 
+                            '<span class="status-badge status-present">Present</span>' : 
+                            '<span class="status-badge status-absent">Incomplete</span>';
+                        
+                        row.innerHTML = `
+                            <td>${formattedDate}</td>
+                            <td>${formatTime(record.punchIn)}</td>
+                            <td>${record.punchOut ? formatTime(record.punchOut) : '--:--'}</td>
+                            <td>${record.workedHours || '--:--'}</td>
+                            <td>${status}</td>
+                        `;
+                        
+                        attendanceTableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading attendance history:', error);
+            }
+        }
+    </script>
+</body>
+</html>
